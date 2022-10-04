@@ -1,8 +1,5 @@
-﻿using System;
-namespace Lab2Solution
-{
-    public enum InvalidFieldError
-    {
+﻿namespace Lab2Solution {
+    public enum InvalidFieldError {
         InvalidClueLength,
         InvalidAnswerLength,
         InvalidDifficulty,
@@ -10,19 +7,16 @@ namespace Lab2Solution
         NoError
     }
 
-    public enum EntryDeletionError
-    {
+    public enum EntryDeletionError {
         EntryNotFound,
         DBDeletionError,
         NoError
     }
 
-    public enum EntryEditError
-    {
+    public enum EntryEditError {
         EntryNotFound,
         InvalidFieldError,
         DBEditError,
         NoError
     }
 }
-

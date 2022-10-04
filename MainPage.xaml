@@ -4,85 +4,183 @@
              x:Class="Lab2Solution.MainPage">
 
     <ScrollView>
-        <Grid Padding="25">
+        <Grid>
             <Grid.RowDefinitions>
-                <RowDefinition  Height="*"></RowDefinition>
-                <RowDefinition Height="5*"></RowDefinition>
-                <RowDefinition Height="2*"></RowDefinition>
-                <RowDefinition Height="*"></RowDefinition>
-
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="4*"/>
+                <RowDefinition Height="3*"/>
+                <RowDefinition Height="*"/>
             </Grid.RowDefinitions>
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="*">
-                </ColumnDefinition>
-                <ColumnDefinition Width="3*"></ColumnDefinition>
-
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="3*"/>
             </Grid.ColumnDefinitions>
-            <Label Text="Clue Compendium" Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" HorizontalTextAlignment="Center"  FontSize="48"/>
+            <Label Grid.Row="0" 
+                   Grid.ColumnSpan="2" 
+                   Text="Clue Compendium" 
+                   HorizontalTextAlignment="Center"  
+                   FontSize="48"
+                   FontAttributes="Bold"
+                   Padding="20"/>
 
             <VerticalStackLayout Grid.Row="1" Grid.Column="0" WidthRequest="200">
-                <Button Text="Add Entry" Clicked="AddEntry" Margin="20"/>
-                <Button Text="Delete Entry" Clicked="DeleteEntry" Margin="20"/>
-                <Button Text="Edit Entry" Clicked="EditEntry" Margin="25"/>
-
+                <Button Text="Add Entry" 
+                        Clicked="AddEntry"
+                        BackgroundColor="LightGray"
+                        TextColor="Black"
+                        FontSize="20"
+                        BorderColor="Black"
+                        BorderWidth="2"
+                        CornerRadius="0"
+                        Padding="20"
+                        Margin="10"/>
+                <Button Text="Delete Entry" 
+                        Clicked="DeleteEntry" 
+                        BackgroundColor="LightGray"
+                        TextColor="Black"
+                        FontSize="20"
+                        BorderColor="Black"
+                        BorderWidth="2"
+                        CornerRadius="0"
+                        Padding="20"
+                        Margin="10"/>
+                <Button Text="Edit Entry" 
+                        Clicked="EditEntry" 
+                        BackgroundColor="LightGray"
+                        TextColor="Black"
+                        FontSize="20"
+                        BorderColor="Black"
+                        BorderWidth="2"
+                        CornerRadius="0"
+                        Padding="20"
+                        Margin="10"/>
             </VerticalStackLayout>
 
-            <ListView Grid.Row="1" Grid.Column="1" x:Name="EntriesLV" MinimumHeightRequest="500" ItemSelected="EntriesLV_ItemSelected">
-                <ListView.ItemTemplate>
-                    <DataTemplate>
-                        <ViewCell>
-                            <Grid RowSpacing="6" ColumnSpacing="10" Padding="10">
+            <Frame Grid.Row="1" Grid.Column="1" BackgroundColor="Transparent" BorderColor="Black" CornerRadius="0" Margin="10" Padding="3">
+                <ListView Grid.Row="1" Grid.Column="1" x:Name="EntriesLV" ItemSelected="EntriesLV_ItemSelected" MaximumHeightRequest="400">
+                    <ListView.ItemTemplate>
+                        <DataTemplate>
+                            <ViewCell>
+                                <Grid RowSpacing="6" ColumnSpacing="0" Padding="10">
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="Auto"/>
+                                    </Grid.RowDefinitions>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto"/>
+                                        <ColumnDefinition Width="Auto"/>
+                                        <ColumnDefinition Width="Auto"/>
+                                        <ColumnDefinition Width="Auto"/>
+                                    </Grid.ColumnDefinitions>
 
-                                <Grid.RowDefinitions>
-                                    <RowDefinition Height="Auto" />
-                                </Grid.RowDefinitions>
+                                    <Label Grid.Row="0" Grid.Column="0" Text="{Binding Answer, StringFormat='{0} - '}" FontSize="16"/>
+                                    <Label Grid.Row="0" Grid.Column="1" Text="{Binding Clue, StringFormat='{0} - '}" FontAttributes="Bold" FontSize="16"/>
+                                    <Label Grid.Row="0" Grid.Column="2" Text="{Binding Date, StringFormat='{0} - '}" FontAttributes="Bold" FontSize="16"/>
+                                    <Label Grid.Row="0" Grid.Column="3" Text="{Binding Difficulty}" FontAttributes="Bold" FontSize="16"/>
+                                </Grid>
+                            </ViewCell>
+                        </DataTemplate>
+                    </ListView.ItemTemplate>
+                </ListView>
+            </Frame>
 
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="Auto"/>
-                                    <ColumnDefinition Width="Auto" />
-                                    <ColumnDefinition Width="Auto"/>
-                                    <ColumnDefinition Width="Auto" />
-                                </Grid.ColumnDefinitions>
-
-                                <Label Grid.Row="0" Grid.Column="0" Text="{Binding Answer}"/>
-                                <Label Grid.Row="0" Grid.Column="1" Text="{Binding Clue}" FontAttributes="Bold" />
-                                <Label Grid.Row="0" Grid.Column="2" Text="{Binding Date}" FontAttributes="Bold" />
-                                <Label Grid.Row="0" Grid.Column="3" Text="{Binding Difficulty}" FontAttributes="Bold" />
-                            </Grid>
-                        </ViewCell>
-                    </DataTemplate>
-
-                </ListView.ItemTemplate>
-            </ListView>
-
-
-            <Grid Grid.Row="2" Grid.Column="1" >
-                <Grid.RowDefinitions>
-                    <RowDefinition/>
-                    <RowDefinition/>
-                    <RowDefinition/>
-                </Grid.RowDefinitions>
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="*"/>
-                    <ColumnDefinition Width="8*"/>
-                </Grid.ColumnDefinitions>
-
-                <Label Grid.Row="0" Grid.Column="0" Text="Clue:" VerticalOptions="Center" />
-                <Entry Grid.Row="0" Grid.Column="1" Text="Ring Highlight?" Placeholder="Clue goes here" x:Name="clueENT"/>
-
-                <Label Grid.Row="1" Grid.Column="0" Text="Answer:" VerticalTextAlignment="Center"/>
-                <Entry Grid.Row="1" Grid.Column="1" Text="JEWEL" Placeholder="answer goes here" x:Name="answerENT"/>
-
-                <HorizontalStackLayout Grid.Row="2" Grid.Column="0">
-                    <Label Text="Difficulty:    " VerticalTextAlignment="Center"/>
-                    <Entry  Text="2" Placeholder="Difficulty goes here" x:Name="difficultyENT"/>
-
-                    <Label Text="Date:" Grid.Row="3" Grid.Column="0" HorizontalTextAlignment="End" VerticalTextAlignment="Center"/>
-                    <Entry Grid.Row="5" Grid.Column="1" Text="10/01/2022" Placeholder="Date goes here" x:Name="dateENT"/>
-                </HorizontalStackLayout>
-            </Grid>
+            <Frame Grid.Row="2" Grid.ColumnSpan="2" BackgroundColor="Transparent" BorderColor="Black" CornerRadius="0" Margin="10">
+                <Grid Grid.Row="2" Grid.ColumnSpan="2" RowSpacing="2">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="8*"/>
+                    </Grid.ColumnDefinitions>
+                    <Label Grid.Row="0"
+                           Grid.Column="0"
+                           Text="Clue: "
+                           VerticalOptions="Center"
+                           HorizontalOptions="End"
+                           FontSize="20"
+                           FontAttributes="Bold"/>
+                    <Frame Grid.Row="0" Grid.Column="1" CornerRadius="0" BorderColor="Black" Margin="5">
+                        <Entry Grid.Row="0"
+                               Grid.Column="1"
+                               Text="Ring Highlight?"
+                               FontSize="20"
+                               Margin="-5"
+                               VerticalOptions="Center"
+                               Placeholder="Clue goes here... (1-250 characters)"
+                               PlaceholderColor="LightGray"
+                               x:Name="clueENT"/>
+                    </Frame>
+                    <Label Grid.Row="1"
+                           Grid.Column="0"
+                           Text="Answer: "
+                           VerticalOptions="Center"
+                           HorizontalOptions="End"
+                           FontSize="20"
+                           FontAttributes="Bold"/>
+                    <Frame Grid.Row="1" Grid.Column="1" CornerRadius="0" BorderColor="Black" Margin="5">
+                        <Entry Grid.Row="1"
+                               Grid.Column="1"
+                               Text="Answer Ring Highlight"
+                               FontSize="20"
+                               Margin="-5"
+                               VerticalOptions="Center"
+                               Placeholder="Answer goes here... (1-25 characters)"
+                               PlaceholderColor="LightGray"
+                               x:Name="answerENT"/>
+                    </Frame>
+                    <Grid Grid.Row="2" Grid.ColumnSpan="2">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="*"/>
+                        </Grid.RowDefinitions>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="2*"/>
+                            <ColumnDefinition Width="2*"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="3*"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <Label Grid.Row="0"
+                               Grid.Column="0"
+                               Text="Difficulty: "
+                               VerticalOptions="Center"
+                               HorizontalOptions="End"
+                               FontSize="20"
+                               FontAttributes="Bold"/>
+                        <Frame Grid.Row="0" Grid.Column="1" CornerRadius="0" BorderColor="Black" Margin="5">
+                            <Entry Grid.Row="0"
+                                   Grid.Column="1"
+                                   Text="2"
+                                   FontSize="20"
+                                   Margin="-5"
+                                   VerticalOptions="Center"
+                                   Placeholder="# (0,1,2)"
+                                   PlaceholderColor="LightGray"
+                                   x:Name="difficultyENT"/>
+                        </Frame>
+                        <Label Grid.Row="0"
+                               Grid.Column="3"
+                               Text="Date: "
+                               VerticalOptions="Center"
+                               HorizontalOptions="End"
+                               FontSize="20"
+                               FontAttributes="Bold"/>
+                        <Frame Grid.Row="0" Grid.Column="4" CornerRadius="0" BorderColor="Black" Margin="5">
+                            <Entry Grid.Row="0"
+                                   Grid.Column="4"
+                                   Text="10/01/2022"
+                                   FontSize="20"
+                                   Margin="-5"
+                                   VerticalOptions="Center"
+                                   Placeholder="mm/dd/yyyy"
+                                   PlaceholderColor="LightGray"
+                                   x:Name="dateENT"/>
+                        </Frame>
+                    </Grid>
+                </Grid>
+            </Frame>
         </Grid>
     </ScrollView>
-
 </ContentPage>
-

@@ -1,22 +1,15 @@
-﻿using System;
-using System.IO;
-using System.Collections.Generic;
-using System.Runtime.Serialization.Formatters.Binary;
-using System.Text.Json;
+﻿using System.Text.Json;
 using System.Collections.ObjectModel;
 
 // https://www.dotnetperls.com/serialize-list
 // https://www.daveoncsharp.com/2009/07/xml-serialization-of-collections/
 
-
-namespace Lab2Solution
-{
+namespace Lab2Solution {
 
     /// <summary>
     /// This is the database class, currently a FlatFileDatabase
     /// </summary>
-    public class FlatFileDatabase : IDatabase
-    {
+    public class FlatFileDatabase : IDatabase {
         String path = "";
         String filename = "clues.json";
 
@@ -31,8 +24,7 @@ namespace Lab2Solution
 
         JsonSerializerOptions options;
 
-        public FlatFileDatabase()
-        {
+        public FlatFileDatabase() {
             string appDataPath = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
 
             path = $"{appDataPath}/{filename}"; // /data/user/0/com.companyname.basicdotnetmauiproject/files/clues.json
@@ -47,18 +39,14 @@ namespace Lab2Solution
         /// Adds an entry to the database
         /// </summary>
         /// <param name="entry">the entry to add</param>
-        public void AddEntry(Entry entry)
-        {
-            try
-            {
+        public void AddEntry(Entry entry) {
+            try {
                 entry.Id = entries.Count + 1;
                 entries.Add(entry);
 
                 string jsonString = JsonSerializer.Serialize(entries, options);
                 File.WriteAllText(path, jsonString);
-            }
-            catch (IOException ioe)
-            {
+            } catch (IOException ioe) {
                 Console.WriteLine("Error while adding entry: {0}", ioe);
             }
         }
@@ -69,12 +57,9 @@ namespace Lab2Solution
         /// </summary>
         /// <param name="id">id to find</param>
         /// <returns>the Entry (if available)</returns>
-        public Entry FindEntry(int id)
-        {
-            foreach (Entry entry in entries)
-            {
-                if (entry.Id == id)
-                {
+        public Entry FindEntry(int id) {
+            foreach (Entry entry in entries) {
+                if (entry.Id == id) {
                     return entry;
                 }
             }
@@ -86,17 +71,13 @@ namespace Lab2Solution
         /// </summary>
         /// 
         /// <param name="entry">An entry, which is presumed to exist</param>
-        public bool DeleteEntry(Entry entry)
-        {
-            try
-            {
+        public bool DeleteEntry(Entry entry) {
+            try {
                 var result = entries.Remove(entry);
                 string jsonString = JsonSerializer.Serialize(entries, options);
                 File.WriteAllText(path, jsonString);
                 return true;
-            }
-            catch (IOException ioe)
-            {
+            } catch (IOException ioe) {
                 Console.WriteLine("Error while deleting entry: {0}", ioe);
             }
             return false;
@@ -107,28 +88,23 @@ namespace Lab2Solution
         /// </summary>
         /// <param name="replacementEntry"></param>
         /// <returns>true if editing was successful</returns>
-        public bool EditEntry(Entry replacementEntry)
-        {
-            foreach (Entry entry in entries) // iterate through entries until we find the Entry in question
-            {
-                if (entry.Id == replacementEntry.Id) // found it
-                {
+        public bool EditEntry(Entry replacementEntry) {
+            // iterate through entries until we find the Entry in question
+            foreach (Entry entry in entries) {
+                // found it
+                if (entry.Id == replacementEntry.Id) {
                     entry.Answer = replacementEntry.Answer;
                     entry.Clue = replacementEntry.Clue;
                     entry.Difficulty = replacementEntry.Difficulty;
                     entry.Date = replacementEntry.Date;         // change it then write it out
 
-                    try
-                    {
+                    try {
                         string jsonString = JsonSerializer.Serialize(entries, options);
                         File.WriteAllText(path, jsonString);
                         return true;
-                    }
-                    catch (IOException ioe)
-                    {
+                    } catch (IOException ioe) {
                         Console.WriteLine("Error while replacing entry: {0}", ioe);
                     }
-
                 }
             }
             return false;
@@ -138,18 +114,15 @@ namespace Lab2Solution
         /// Retrieves all the entries
         /// </summary>
         /// <returns>all of the entries</returns>
-        public ObservableCollection<Entry> GetEntries()
-        {
-            if (!File.Exists(path))
-            {
+        public ObservableCollection<Entry> GetEntries() {
+            if (!File.Exists(path)) {
                 File.CreateText(path);
                 entries = new ObservableCollection<Entry>();
                 return entries;
             }
 
             string jsonString = File.ReadAllText(path);
-            if (jsonString.Length > 0)
-            {
+            if (jsonString.Length > 0) {
                 entries = JsonSerializer.Deserialize<ObservableCollection<Entry>>(jsonString);
             }
             return entries;

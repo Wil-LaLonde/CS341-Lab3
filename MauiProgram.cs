@@ -1,11 +1,9 @@
 ﻿namespace Lab2Solution;
 
-public static class MauiProgram
-{
+public static class MauiProgram {
     public static IBusinessLogic ibl = new BusinessLogic();
 
-    public static MauiApp CreateMauiApp()
-	{
+    public static MauiApp CreateMauiApp() {
 		var builder = MauiApp.CreateBuilder();
 		builder
 			.UseMauiApp<App>()

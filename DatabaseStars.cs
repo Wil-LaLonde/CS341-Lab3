@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.ObjectModel;
-using System.Text.Json;
-
-namespace Lab2Solution
-{
+﻿namespace Lab2Solution {
     /*
     public class DatabaseStars
     {
@@ -99,4 +94,3 @@ namespace Lab2Solution
     }
 */
 }
-

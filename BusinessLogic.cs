@@ -1,40 +1,32 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
+﻿using System.Collections.ObjectModel;
 
-namespace Lab2Solution
-{
+namespace Lab2Solution {
 
     /// <summary>
     /// Handles the BusinessLogic
     /// </summary>
-    public class BusinessLogic : IBusinessLogic
-    {
+    public class BusinessLogic : IBusinessLogic {
         const int MAX_CLUE_LENGTH = 250;
         const int MAX_ANSWER_LENGTH = 21;
         const int MAX_DIFFICULTY = 5;
         int latestId = 0;
 
-        IDatabase db;                     // the actual database that does the hardwork
+        IDatabase db; // the actual database that does the hardwork
 
-        public BusinessLogic()
-        {
-            db = new FlatFileDatabase(); // new RelationalDatabase();           // 
+        public BusinessLogic() {
+            db = new FlatFileDatabase(); // new RelationalDatabase();
         }
-
 
         /// <summary>
         /// Represents all entries
         /// This also could have been a property
         /// </summary>
         /// <returns>ObservableCollection of entrties</returns>
-        public ObservableCollection<Entry> GetEntries()
-        {
+        public ObservableCollection<Entry> GetEntries() {
             return db.GetEntries();
         }
 
-        public Entry FindEntry(int id)
-        {
+        public Entry FindEntry(int id) {
             return db.FindEntry(id);
         }
 
@@ -46,22 +38,16 @@ namespace Lab2Solution
         /// <param name="difficulty"></param>
         /// <param name="date"></param>
         /// <returns>an error if there is an error, InvalidFieldError.None otherwise</returns>
-
-        private InvalidFieldError CheckEntryFields(string clue, string answer, int difficulty, string date)
-        {
-            if (clue.Length < 1 || clue.Length > MAX_CLUE_LENGTH)
-            {
+        private InvalidFieldError CheckEntryFields(string clue, string answer, int difficulty, string date) {
+            if (clue.Length < 1 || clue.Length > MAX_CLUE_LENGTH) {
                 return InvalidFieldError.InvalidClueLength;
             }
-            if (answer.Length < 1 || answer.Length > MAX_ANSWER_LENGTH)
-            {
+            if (answer.Length < 1 || answer.Length > MAX_ANSWER_LENGTH) {
                 return InvalidFieldError.InvalidAnswerLength;
             }
-            if (difficulty < 0 || difficulty > MAX_DIFFICULTY)
-            {
+            if (difficulty < 0 || difficulty > MAX_DIFFICULTY) {
                 return InvalidFieldError.InvalidDifficulty;
             }
-
             return InvalidFieldError.NoError;
         }
 
@@ -74,12 +60,9 @@ namespace Lab2Solution
         /// <param name="difficulty"></param>
         /// <param name="date"></param>
         /// <returns>an error if there is an error, InvalidFieldError.None otherwise</returns>
-        public InvalidFieldError AddEntry(string clue, string answer, int difficulty, string date)
-        {
-
+        public InvalidFieldError AddEntry(string clue, string answer, int difficulty, string date) {
             var result = CheckEntryFields(clue, answer, difficulty, date);
-            if (result != InvalidFieldError.NoError)
-            {
+            if (result != InvalidFieldError.NoError) {
                 return result;
             }
             Entry entry = new Entry(clue, answer, difficulty, date, ++latestId);
@@ -93,26 +76,19 @@ namespace Lab2Solution
         /// </summary>
         /// <param name="entryId"></param>
         /// <returns>an erreor if there is one, EntryDeletionError.NoError otherwise</returns>
-        public EntryDeletionError DeleteEntry(int entryId)
-        {
+        public EntryDeletionError DeleteEntry(int entryId) {
 
             var entry = db.FindEntry(entryId);
 
-            if (entry != null)
-            {
+            if (entry != null) {
                 bool success = db.DeleteEntry(entry);
-                if (success)
-                {
+                if (success) {
                     return EntryDeletionError.NoError;
 
-                }
-                else
-                {
+                } else {
                     return EntryDeletionError.DBDeletionError;
                 }
-            }
-            else
-            {
+            } else {
                 return EntryDeletionError.EntryNotFound;
             }
         }
@@ -126,12 +102,10 @@ namespace Lab2Solution
         /// <param name="date"></param>
         /// <param name="id"></param>
         /// <returns>an error if there is one, EntryEditError.None otherwise</returns>
-        public EntryEditError EditEntry(string clue, string answer, int difficulty, string date, int id)
-        {
+        public EntryEditError EditEntry(string clue, string answer, int difficulty, string date, int id) {
 
             var fieldCheck = CheckEntryFields(clue, answer, difficulty, date);
-            if (fieldCheck != InvalidFieldError.NoError)
-            {
+            if (fieldCheck != InvalidFieldError.NoError) {
                 return EntryEditError.InvalidFieldError;
             }
 
@@ -142,14 +116,11 @@ namespace Lab2Solution
             entry.Date = date;
 
             bool success = db.EditEntry(entry);
-            if (!success)
-            {
+            if (!success) {
                 return EntryEditError.DBEditError;
             }
 
             return EntryEditError.NoError;
         }
     }
-
-
 }
