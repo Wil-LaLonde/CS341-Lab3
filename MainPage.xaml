@@ -54,10 +54,30 @@
                         CornerRadius="0"
                         Padding="20"
                         Margin="10"/>
+                <Button Text="Clue Sort"
+                        Clicked="ClueSort"
+                        Background="LightGray"
+                        TextColor="Black"
+                        FontSize="20"
+                        BorderColor="Black"
+                        BorderWidth="2"
+                        CornerRadius="0"
+                        Padding="10"
+                        Margin="10, 125, 10, 0"/>
+                <Button Text="Answer Sort"
+                        Clicked="AnswerSort"
+                        Background="LightGray"
+                        TextColor="Black"
+                        FontSize="20"
+                        BorderColor="Black"
+                        BorderWidth="2"
+                        CornerRadius="0"
+                        Padding="10"
+                        Margin="10"/>
             </VerticalStackLayout>
 
             <Frame Grid.Row="1" Grid.Column="1" BackgroundColor="Transparent" BorderColor="Black" CornerRadius="0" Margin="10" Padding="3">
-                <ListView Grid.Row="1" Grid.Column="1" x:Name="EntriesLV" ItemSelected="EntriesLV_ItemSelected" MaximumHeightRequest="400">
+                <ListView Grid.Row="1" Grid.Column="1" x:Name="EntriesLV" ItemSelected="EntriesLV_ItemSelected" MaximumHeightRequest="475" >
                     <ListView.ItemTemplate>
                         <DataTemplate>
                             <ViewCell>
@@ -72,10 +92,10 @@
                                         <ColumnDefinition Width="Auto"/>
                                     </Grid.ColumnDefinitions>
 
-                                    <Label Grid.Row="0" Grid.Column="0" Text="{Binding Answer, StringFormat='{0} - '}" FontSize="16"/>
-                                    <Label Grid.Row="0" Grid.Column="1" Text="{Binding Clue, StringFormat='{0} - '}" FontAttributes="Bold" FontSize="16"/>
-                                    <Label Grid.Row="0" Grid.Column="2" Text="{Binding Date, StringFormat='{0} - '}" FontAttributes="Bold" FontSize="16"/>
-                                    <Label Grid.Row="0" Grid.Column="3" Text="{Binding Difficulty}" FontAttributes="Bold" FontSize="16"/>
+                                    <Label Grid.Row="0" Grid.Column="0" Text="{Binding Answer, StringFormat='{0} - '}" FontSize="18"/>
+                                    <Label Grid.Row="0" Grid.Column="1" Text="{Binding Clue, StringFormat='{0} - '}" FontAttributes="Bold" FontSize="18"/>
+                                    <Label Grid.Row="0" Grid.Column="2" Text="{Binding Date, StringFormat='{0} - '}" FontAttributes="Bold" FontSize="18"/>
+                                    <Label Grid.Row="0" Grid.Column="3" Text="{Binding Difficulty}" FontAttributes="Bold" FontSize="18"/>
                                 </Grid>
                             </ViewCell>
                         </DataTemplate>

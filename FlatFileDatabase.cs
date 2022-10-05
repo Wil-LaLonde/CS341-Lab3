@@ -1,5 +1,6 @@
 ﻿using System.Text.Json;
 using System.Collections.ObjectModel;
+using Microsoft.Maui.Controls;
 
 // https://www.dotnetperls.com/serialize-list
 // https://www.daveoncsharp.com/2009/07/xml-serialization-of-collections/
@@ -39,16 +40,18 @@ namespace Lab2Solution {
         /// Adds an entry to the database
         /// </summary>
         /// <param name="entry">the entry to add</param>
-        public void AddEntry(Entry entry) {
+        public bool AddEntry(Entry entry) {
             try {
                 entry.Id = entries.Count + 1;
                 entries.Add(entry);
 
                 string jsonString = JsonSerializer.Serialize(entries, options);
                 File.WriteAllText(path, jsonString);
+                return true;
             } catch (IOException ioe) {
                 Console.WriteLine("Error while adding entry: {0}", ioe);
             }
+            return false;
         }
 
 
@@ -124,6 +127,19 @@ namespace Lab2Solution {
             string jsonString = File.ReadAllText(path);
             if (jsonString.Length > 0) {
                 entries = JsonSerializer.Deserialize<ObservableCollection<Entry>>(jsonString);
+            }
+            return entries;
+        }
+
+        public ObservableCollection<Entry> EntryListSort(SortType sortType) {
+            //Checking to see what sorting type we are
+            switch(sortType) {
+                case SortType.ClueSort:
+                    entries = new ObservableCollection<Entry>(entries.OrderBy(entry => entry.Clue));
+                    break;
+                case SortType.AnswerSort:
+                    entries = new ObservableCollection<Entry>(entries.OrderBy(entry => entry.Answer));
+                    break;
             }
             return entries;
         }

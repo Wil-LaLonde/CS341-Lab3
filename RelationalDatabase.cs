@@ -1,6 +1,7 @@
 ﻿using System.Text.Json;
 using System.Collections.ObjectModel;
 using Npgsql;
+using Java.Sql;
 
 // https://www.dotnetperls.com/serialize-list
 // https://www.daveoncsharp.com/2009/07/xml-serialization-of-collections/
@@ -21,7 +22,6 @@ namespace Lab2Solution {
         /// There are always tradeoffs in software engineering.
         /// </summary>
         ObservableCollection<Entry> entries = new ObservableCollection<Entry>();
-        JsonSerializerOptions options;
 
         /// <summary>
         /// Here or thereabouts initialize a connectionString that will be used in all the SQL calls
@@ -34,17 +34,19 @@ namespace Lab2Solution {
         /// Adds an entry to the database
         /// </summary>
         /// <param name="entry">the entry to add</param>
-        public void AddEntry(Entry entry) {
+        public bool AddEntry(Entry entry) {
             try {
                 entry.Id = entries.Count + 1;
                 entries.Add(entry);
 
                 // write the SQL to INSERT entry into bit.io
-             
+
+                return true;
             }
             catch (IOException ioe) {
                 Console.WriteLine("Error while adding entry: {0}", ioe);
             }
+            return false;
         }
 
         /// <summary>
@@ -94,7 +96,7 @@ namespace Lab2Solution {
                     entry.Date = replacementEntry.Date;
 
                     try {
-                       /// write the SQL to UPDATE the entry. Again, you have its id, which should be all you need.
+                       // write the SQL to UPDATE the entry. Again, you have its id, which should be all you need.
 
                        return true;
                     } catch (IOException ioe) {
@@ -110,27 +112,27 @@ namespace Lab2Solution {
         /// </summary>
         /// <returns>all of the entries</returns>
         public ObservableCollection<Entry> GetEntries() {
-            while (entries.Count > 0) {
-                entries.RemoveAt(0);
-            }
+            //Clear entries first before gathering all other entries.
+            entries.Clear();
 
             using var con = new NpgsqlConnection(connectionString);
             con.Open();
 
-            var sql = "SELECT * FROM \"entries\" limit 10;";
+            var sql = "SELECT * FROM Entry;";
 
             using var cmd = new NpgsqlCommand(sql, con);
 
             using NpgsqlDataReader reader = cmd.ExecuteReader();
 
-            // Columns are clue, answer, difficulty, date, id in that order ...
-            // Show all data
+            //Columns read as follows: id, clue, answer, difficulty, date
+            //When making a new Entry, values are passed in as: clue, answer, difficulty, date, id
+
+            //Database: id[0], clue[1], answer[2], difficulty[3], date[4]
+            //Entry: clue[0], answer[1], difficulty[2], date[3], id[4]
             while (reader.Read()) {
-                for (int colNum = 0; colNum < reader.FieldCount; colNum++) {
-                    Console.Write(reader.GetName(colNum) + "=" + reader[colNum] + " ");
-                }
-                Console.Write("\n");
-                entries.Add(new Entry(reader[0] as String, reader[1] as String, (int)reader[2], reader[3] as String, (int)reader[4]));
+                //Creating a new Entry
+                Entry storedEntry = new Entry(reader[1] as String, reader[2] as String, (int)reader[3], reader[4] as String, (int)reader[0]);
+                entries.Add(storedEntry);
             }
 
             con.Close();
@@ -144,12 +146,23 @@ namespace Lab2Solution {
         /// </summary>
         public String InitializeConnectionString() {
             var bitHost = "db.bit.io";
-            var bitApiKey = ""; // from the "Password" field of the "Connect" menu
+            var bitApiKey = "v2_3ub36_rHYqdxbHDc2GZTU4gRCiRYg"; // from the "Password" field of the "Connect" menu
+            var bitUser = "WilLaLonde";
+            var bitDbName = "WilLaLonde/Lab3Database";
+            return $"Host={bitHost};Username={bitUser};Password={bitApiKey};Database={bitDbName}";
+        }
 
-            var bitUser = "";
-            var bitDbName = "";
-
-            return connectionString = $"Host={bitHost};Username={bitUser};Password={bitApiKey};Database={bitDbName}";
+        public ObservableCollection<Entry> EntryListSort(SortType sortType) {
+            //Checking to see what sorting type we are
+            switch (sortType) {
+                case SortType.ClueSort:
+                    entries = new ObservableCollection<Entry>(entries.OrderBy(entry => entry.Clue));
+                    break;
+                case SortType.AnswerSort:
+                    entries = new ObservableCollection<Entry>(entries.OrderBy(entry => entry.Answer));
+                    break;
+            }
+            return entries;
         }
     }
 }

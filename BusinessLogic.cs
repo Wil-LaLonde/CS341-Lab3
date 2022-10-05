@@ -6,15 +6,20 @@ namespace Lab2Solution {
     /// Handles the BusinessLogic
     /// </summary>
     public class BusinessLogic : IBusinessLogic {
+        const int MIN_CLUE_ANSWER_LENGTH = 1;
         const int MAX_CLUE_LENGTH = 250;
-        const int MAX_ANSWER_LENGTH = 21;
-        const int MAX_DIFFICULTY = 5;
+        const int MAX_ANSWER_LENGTH = 25;
+        const int MIN_DIFFICULTY = 0;
+        const int MAX_DIFFICULTY = 2;
+        const String DATE_FORMAT = "mm/dd/yyyy";
         int latestId = 0;
 
-        IDatabase db; // the actual database that does the hardwork
+        //IDatabase db; // Local Database
+        IDatabase relationalDb; //bit.io Database
 
         public BusinessLogic() {
-            db = new FlatFileDatabase(); // new RelationalDatabase();
+            //db = new FlatFileDatabase();
+            relationalDb = new RelationalDatabase();
         }
 
         /// <summary>
@@ -23,11 +28,11 @@ namespace Lab2Solution {
         /// </summary>
         /// <returns>ObservableCollection of entrties</returns>
         public ObservableCollection<Entry> GetEntries() {
-            return db.GetEntries();
+            return relationalDb.GetEntries();
         }
 
         public Entry FindEntry(int id) {
-            return db.FindEntry(id);
+            return relationalDb.FindEntry(id);
         }
 
         /// <summary>
@@ -38,17 +43,24 @@ namespace Lab2Solution {
         /// <param name="difficulty"></param>
         /// <param name="date"></param>
         /// <returns>an error if there is an error, InvalidFieldError.None otherwise</returns>
-        private InvalidFieldError CheckEntryFields(string clue, string answer, int difficulty, string date) {
-            if (clue.Length < 1 || clue.Length > MAX_CLUE_LENGTH) {
-                return InvalidFieldError.InvalidClueLength;
+        private EntryError CheckEntryFields(String clue, String answer, int difficulty, String date) {
+            if (clue.Length < MIN_CLUE_ANSWER_LENGTH || clue.Length > MAX_CLUE_LENGTH) {
+                return EntryError.InvalidClueLength;
             }
-            if (answer.Length < 1 || answer.Length > MAX_ANSWER_LENGTH) {
-                return InvalidFieldError.InvalidAnswerLength;
+            if (answer.Length < MIN_CLUE_ANSWER_LENGTH || answer.Length > MAX_ANSWER_LENGTH) {
+                return EntryError.InvalidAnswerLength;
             }
-            if (difficulty < 0 || difficulty > MAX_DIFFICULTY) {
-                return InvalidFieldError.InvalidDifficulty;
+            bool invalidDate = !DateTime.TryParseExact(date, DATE_FORMAT,
+                                                    System.Globalization.CultureInfo.InvariantCulture,
+                                                    System.Globalization.DateTimeStyles.None,
+                                                    out _);
+            if (invalidDate) {
+                return EntryError.InvalidDate;
             }
-            return InvalidFieldError.NoError;
+            if (difficulty < MIN_DIFFICULTY || difficulty > MAX_DIFFICULTY) {
+                return EntryError.InvalidDifficulty;
+            }
+            return EntryError.NoError;
         }
 
 
@@ -60,15 +72,17 @@ namespace Lab2Solution {
         /// <param name="difficulty"></param>
         /// <param name="date"></param>
         /// <returns>an error if there is an error, InvalidFieldError.None otherwise</returns>
-        public InvalidFieldError AddEntry(string clue, string answer, int difficulty, string date) {
+        public EntryError AddEntry(string clue, string answer, int difficulty, string date) {
             var result = CheckEntryFields(clue, answer, difficulty, date);
-            if (result != InvalidFieldError.NoError) {
+            if (result != EntryError.NoError) {
                 return result;
             }
             Entry entry = new Entry(clue, answer, difficulty, date, ++latestId);
-            db.AddEntry(entry);
-
-            return InvalidFieldError.NoError;
+            bool success = relationalDb.AddEntry(entry);
+            if (!success) {
+                return EntryError.DBAddError;
+            }
+            return EntryError.NoError;
         }
 
         /// <summary>
@@ -76,20 +90,20 @@ namespace Lab2Solution {
         /// </summary>
         /// <param name="entryId"></param>
         /// <returns>an erreor if there is one, EntryDeletionError.NoError otherwise</returns>
-        public EntryDeletionError DeleteEntry(int entryId) {
+        public EntryError DeleteEntry(int entryId) {
 
-            var entry = db.FindEntry(entryId);
+            var entry = relationalDb.FindEntry(entryId);
 
             if (entry != null) {
-                bool success = db.DeleteEntry(entry);
+                bool success = relationalDb.DeleteEntry(entry);
                 if (success) {
-                    return EntryDeletionError.NoError;
+                    return EntryError.NoError;
 
                 } else {
-                    return EntryDeletionError.DBDeletionError;
+                    return EntryError.DBDeleteError;
                 }
             } else {
-                return EntryDeletionError.EntryNotFound;
+                return EntryError.EntryNotFound;
             }
         }
 
@@ -102,25 +116,34 @@ namespace Lab2Solution {
         /// <param name="date"></param>
         /// <param name="id"></param>
         /// <returns>an error if there is one, EntryEditError.None otherwise</returns>
-        public EntryEditError EditEntry(string clue, string answer, int difficulty, string date, int id) {
+        public EntryError EditEntry(string clue, string answer, int difficulty, string date, int id) {
 
             var fieldCheck = CheckEntryFields(clue, answer, difficulty, date);
-            if (fieldCheck != InvalidFieldError.NoError) {
-                return EntryEditError.InvalidFieldError;
+            if (fieldCheck != EntryError.NoError) {
+                return fieldCheck;
             }
 
-            var entry = db.FindEntry(id);
-            entry.Clue = clue;
-            entry.Answer = answer;
-            entry.Difficulty = difficulty;
-            entry.Date = date;
+            var entry = relationalDb.FindEntry(id);
+            if (entry != null) {
+                entry.Clue = clue;
+                entry.Answer = answer;
+                entry.Difficulty = difficulty;
+                entry.Date = date;
 
-            bool success = db.EditEntry(entry);
-            if (!success) {
-                return EntryEditError.DBEditError;
+                bool success = relationalDb.EditEntry(entry);
+                if (!success) {
+                    return EntryError.DBEditError;
+                }
+            } else {
+                return EntryError.EntryNotFound;
             }
 
-            return EntryEditError.NoError;
+            return EntryError.NoError;
+        }
+
+        public ObservableCollection<Entry> EntryListSort(SortType sortType) {
+            //Checking what sorting type
+            return relationalDb.EntryListSort(sortType);
         }
     }
 }

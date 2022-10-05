@@ -5,10 +5,11 @@ namespace Lab2Solution {
     /// The interface for BusinessLogic
     /// </summary>
     public interface IBusinessLogic {
-        InvalidFieldError AddEntry(string clue, string answer, int difficulty, string date);
-        EntryDeletionError DeleteEntry(int entryId);
-        EntryEditError EditEntry(string clue, string answer, int difficulty, string date, int id);
+        EntryError AddEntry(string clue, string answer, int difficulty, string date);
+        EntryError DeleteEntry(int entryId);
+        EntryError EditEntry(string clue, string answer, int difficulty, string date, int id);
         Entry FindEntry(int id);
         ObservableCollection<Entry> GetEntries();
+        ObservableCollection<Entry> EntryListSort(SortType sortType);
     }
 }

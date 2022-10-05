@@ -1,22 +1,19 @@
 ﻿namespace Lab2Solution {
-    public enum InvalidFieldError {
+    public enum EntryError {
         InvalidClueLength,
         InvalidAnswerLength,
         InvalidDifficulty,
         InvalidDate,
-        NoError
-    }
-
-    public enum EntryDeletionError {
         EntryNotFound,
-        DBDeletionError,
-        NoError
-    }
-
-    public enum EntryEditError {
-        EntryNotFound,
-        InvalidFieldError,
+        EntryNotSelected,
+        DBAddError,
+        DBDeleteError,
         DBEditError,
         NoError
+    }
+
+    public enum SortType {
+        ClueSort,
+        AnswerSort
     }
 }

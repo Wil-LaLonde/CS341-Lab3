@@ -2,7 +2,6 @@
 namespace Lab2Solution {
 
     public partial class MainPage : ContentPage {
-
         public MainPage() {
             InitializeComponent();
             EntriesLV.ItemsSource = MauiProgram.ibl.GetEntries();
@@ -13,11 +12,10 @@ namespace Lab2Solution {
             String answer = answerENT.Text;
             String date = dateENT.Text;
 
-            int difficulty;
-            bool validDifficulty = int.TryParse(difficultyENT.Text, out difficulty);
+            bool validDifficulty = int.TryParse(difficultyENT.Text, out int difficulty);
             if (validDifficulty) {
-                InvalidFieldError invalidFieldError = MauiProgram.ibl.AddEntry(clue, answer, difficulty, date);
-                if(invalidFieldError != InvalidFieldError.NoError) {
+                EntryError invalidFieldError = MauiProgram.ibl.AddEntry(clue, answer, difficulty, date);
+                if(invalidFieldError != EntryError.NoError) {
                     DisplayAlert("An error has occurred while adding an entry", $"{invalidFieldError}", "OK");
                 }
             } else {
@@ -27,36 +25,59 @@ namespace Lab2Solution {
 
         void DeleteEntry(Object sender, EventArgs e) {
             Entry selectedEntry = EntriesLV.SelectedItem as Entry;
-            EntryDeletionError entryDeletionError = MauiProgram.ibl.DeleteEntry(selectedEntry.Id);
-            if(entryDeletionError != EntryDeletionError.NoError) {
-                DisplayAlert("An error has occurred while deleting an entry", $"{entryDeletionError}", "OK");
+            if (selectedEntry != null) {
+                EntryError entryDeletionError = MauiProgram.ibl.DeleteEntry(selectedEntry.Id);
+                if (entryDeletionError != EntryError.NoError) {
+                    DisplayAlert("An error has occurred while deleting an entry", $"{entryDeletionError}", "OK");
+                }
+                //Resetting the selected list item.
+                EntriesLV.SelectedItem = null;
+            } else {
+                DisplayAlert("Please select an entry", EntryError.EntryNotSelected.ToString(), "OK");
             }
         }
 
         void EditEntry(Object sender, EventArgs e) {
             Entry selectedEntry = EntriesLV.SelectedItem as Entry;
-            selectedEntry.Clue = clueENT.Text;
-            selectedEntry.Answer = answerENT.Text;
-            selectedEntry.Date = dateENT.Text;
+            if (selectedEntry != null) {
+                selectedEntry.Clue = clueENT.Text;
+                selectedEntry.Answer = answerENT.Text;
+                selectedEntry.Date = dateENT.Text;
 
-            int difficulty;
-            bool validDifficulty = int.TryParse(difficultyENT.Text, out difficulty);
-            if (validDifficulty) {
-                selectedEntry.Difficulty = difficulty;
-                Console.WriteLine($"Difficuilt is {selectedEntry.Difficulty}");
-                EntryEditError entryEditError = MauiProgram.ibl.EditEntry(selectedEntry.Clue, selectedEntry.Answer, selectedEntry.Difficulty, selectedEntry.Date, selectedEntry.Id);
-                if (entryEditError != EntryEditError.NoError) {
-                    DisplayAlert("An error has occurred while editing an entry", $"{entryEditError}", "OK");
+                bool validDifficulty = int.TryParse(difficultyENT.Text, out int difficulty);
+                if (validDifficulty) {
+                    selectedEntry.Difficulty = difficulty;
+                    Console.WriteLine($"Difficuilt is {selectedEntry.Difficulty}");
+                    EntryError entryEditError = MauiProgram.ibl.EditEntry(selectedEntry.Clue, selectedEntry.Answer, selectedEntry.Difficulty, selectedEntry.Date, selectedEntry.Id);
+                    if (entryEditError != EntryError.NoError) {
+                        DisplayAlert("An error has occurred while editing an entry", $"{entryEditError}", "OK");
+                    }
+                    //Resetting the selected list item.
+                    EntriesLV.SelectedItem = null;
                 }
+            } else {
+                DisplayAlert("Please select an entry", EntryError.EntryNotSelected.ToString(), "OK");
             }
+        }
+
+        void ClueSort(Object sender, EventArgs e) {
+            //Updating the list view to the most up to date clue sorted list.
+            EntriesLV.ItemsSource = MauiProgram.ibl.EntryListSort(SortType.ClueSort);
+        }
+
+        void AnswerSort(Object sender, EventArgs e) {
+            //Updating the list view to the most up to date answer sorted list.
+            EntriesLV.ItemsSource = MauiProgram.ibl.EntryListSort(SortType.AnswerSort);
         }
 
         void EntriesLV_ItemSelected(Object sender, SelectedItemChangedEventArgs e) {
             Entry selectedEntry = e.SelectedItem as Entry;
-            clueENT.Text = selectedEntry.Clue;
-            answerENT.Text = selectedEntry.Answer;
-            difficultyENT.Text = selectedEntry.Difficulty.ToString();
-            dateENT.Text = selectedEntry.Date;
+            if (selectedEntry != null) {
+                clueENT.Text = selectedEntry.Clue;
+                answerENT.Text = selectedEntry.Answer;
+                difficultyENT.Text = selectedEntry.Difficulty.ToString();
+                dateENT.Text = selectedEntry.Date;
+            } 
         }
     }
 }

@@ -22,11 +22,7 @@ namespace Lab2Solution {
 
         public int Difficulty {
             get { return difficulty; }
-            set {
-                if (value <= MAX_DIFFICULTY && value >= 0) {
-                    SetProperty(ref difficulty, value);
-                }
-            }
+            set { SetProperty(ref difficulty, value); }
         }
 
         public String Date {
