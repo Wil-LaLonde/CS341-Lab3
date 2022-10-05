@@ -1,4 +1,5 @@
 ﻿namespace Lab2Solution {
+    //Different EntryErrors that could occur
     public enum EntryError {
         InvalidClueLength,
         InvalidAnswerLength,
@@ -11,7 +12,7 @@
         DBEditError,
         NoError
     }
-
+    //Different sorting types
     public enum SortType {
         ClueSort,
         AnswerSort

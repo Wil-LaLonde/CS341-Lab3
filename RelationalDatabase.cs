@@ -1,26 +1,16 @@
-﻿using System.Text.Json;
-using System.Collections.ObjectModel;
+﻿using System.Collections.ObjectModel;
 using Npgsql;
-using Java.Sql;
 
 // https://www.dotnetperls.com/serialize-list
 // https://www.daveoncsharp.com/2009/07/xml-serialization-of-collections/
 
-
 namespace Lab2Solution {
 
     /// <summary>
-    /// This is the database class, currently a FlatFileDatabase
+    /// This is the database class. This uses a bit.io database
     /// </summary>
     public class RelationalDatabase : IDatabase {
-        String connectionString;
-        /// <summary>
-        /// A local version of the database, we *might* want to keep this in the code and merely
-        /// adjust it whenever Add(), Delete() or Edit() is called
-        /// Alternatively, we could delete this, meaning we will reach out to bit.io for everything
-        /// What are the costs of that?
-        /// There are always tradeoffs in software engineering.
-        /// </summary>
+        string connectionString;
         ObservableCollection<Entry> entries = new ObservableCollection<Entry>();
 
         /// <summary>
@@ -34,16 +24,23 @@ namespace Lab2Solution {
         /// Adds an entry to the database
         /// </summary>
         /// <param name="entry">the entry to add</param>
+        /// <returns>true/false</returns>
         public bool AddEntry(Entry entry) {
             try {
                 entry.Id = entries.Count + 1;
                 entries.Add(entry);
-
-                // write the SQL to INSERT entry into bit.io
-
+                //Creating and opening the database connection.
+                using var con = new NpgsqlConnection(connectionString);
+                con.Open();
+                //Writing the SQL insert statement.
+                var sql = $"INSERT INTO Entry VALUES ({entry.Id}, '{entry.Clue}', '{entry.Answer}', {entry.Difficulty}, '{entry.Date}');";
+                //Executing the query.
+                using var cmd = new NpgsqlCommand(sql, con);
+                cmd.ExecuteNonQuery();
+                //Closing the connection.
+                con.Close();
                 return true;
-            }
-            catch (IOException ioe) {
+            } catch (NpgsqlException ioe) {
                 Console.WriteLine("Error while adding entry: {0}", ioe);
             }
             return false;
@@ -66,15 +63,23 @@ namespace Lab2Solution {
         /// <summary>
         /// Deletes an entry 
         /// </summary>
-        /// 
         /// <param name="entry">An entry, which is presumed to exist</param>
+        /// <returns>true/false</returns>
         public bool DeleteEntry(Entry entry) {
             try {
                 var result = entries.Remove(entry);
-                // Write the SQL to DELETE entry from bit.io. You have its id, that should be all that you 
+                //Creating and opening the database connection.
+                using var con = new NpgsqlConnection(connectionString);
+                con.Open();
+                //Writing the SQL delete statement.
+                var sql = $"DELETE FROM Entry WHERE id = {entry.Id};";
+                //Executing the query.
+                using var cmd = new NpgsqlCommand(sql, con);
+                cmd.ExecuteNonQuery();
+                //Closing the connection.
+                con.Close();
                 return true;
-            }
-            catch (IOException ioe) {
+            } catch (NpgsqlException ioe) {
                 Console.WriteLine("Error while deleting entry: {0}", ioe);
             }
             return false;
@@ -96,10 +101,18 @@ namespace Lab2Solution {
                     entry.Date = replacementEntry.Date;
 
                     try {
-                       // write the SQL to UPDATE the entry. Again, you have its id, which should be all you need.
-
-                       return true;
-                    } catch (IOException ioe) {
+                        //Creating and opening the database connection.
+                        using var con = new NpgsqlConnection(connectionString);
+                        con.Open();
+                        //Writing the SQL update statement.
+                        var sql = $"UPDATE Entry SET clue = '{entry.Clue}', answer = '{entry.Answer}', difficulty = {entry.Difficulty}, date = '{entry.Date}' WHERE id = {entry.Id}";
+                        //Executing the query.
+                        using var cmd = new NpgsqlCommand(sql, con);
+                        cmd.ExecuteNonQuery();
+                        //Closing the connection.
+                        con.Close();
+                        return true;
+                    } catch (NpgsqlException ioe) {
                         Console.WriteLine("Error while replacing entry: {0}", ioe);
                     }
                 }
@@ -114,29 +127,31 @@ namespace Lab2Solution {
         public ObservableCollection<Entry> GetEntries() {
             //Clear entries first before gathering all other entries.
             entries.Clear();
+            try {
+                using var con = new NpgsqlConnection(connectionString);
+                con.Open();
 
-            using var con = new NpgsqlConnection(connectionString);
-            con.Open();
+                var sql = "SELECT * FROM Entry;";
 
-            var sql = "SELECT * FROM Entry;";
+                using var cmd = new NpgsqlCommand(sql, con);
 
-            using var cmd = new NpgsqlCommand(sql, con);
+                using NpgsqlDataReader reader = cmd.ExecuteReader();
 
-            using NpgsqlDataReader reader = cmd.ExecuteReader();
+                //Columns read as follows: id, clue, answer, difficulty, date
+                //When making a new Entry, values are passed in as: clue, answer, difficulty, date, id
 
-            //Columns read as follows: id, clue, answer, difficulty, date
-            //When making a new Entry, values are passed in as: clue, answer, difficulty, date, id
+                //Database: id[0], clue[1], answer[2], difficulty[3], date[4]
+                //Entry: clue[0], answer[1], difficulty[2], date[3], id[4]
+                while (reader.Read()) {
+                    //Creating a new Entry
+                    Entry storedEntry = new Entry(reader[1] as string, reader[2] as string, (int)reader[3], reader[4] as string, (int)reader[0]);
+                    entries.Add(storedEntry);
+                }
 
-            //Database: id[0], clue[1], answer[2], difficulty[3], date[4]
-            //Entry: clue[0], answer[1], difficulty[2], date[3], id[4]
-            while (reader.Read()) {
-                //Creating a new Entry
-                Entry storedEntry = new Entry(reader[1] as String, reader[2] as String, (int)reader[3], reader[4] as String, (int)reader[0]);
-                entries.Add(storedEntry);
+                con.Close();
+            } catch(NpgsqlException ieo) {
+                Console.WriteLine("Error while gathering entries: {0}", ieo);
             }
-
-            con.Close();
-
             return entries;
         }
 
@@ -144,7 +159,7 @@ namespace Lab2Solution {
         /// Creates the connection string to be utilized throughout the program
         /// 
         /// </summary>
-        public String InitializeConnectionString() {
+        public string InitializeConnectionString() {
             var bitHost = "db.bit.io";
             var bitApiKey = "v2_3ub36_rHYqdxbHDc2GZTU4gRCiRYg"; // from the "Password" field of the "Connect" menu
             var bitUser = "WilLaLonde";
@@ -152,6 +167,11 @@ namespace Lab2Solution {
             return $"Host={bitHost};Username={bitUser};Password={bitApiKey};Database={bitDbName}";
         }
 
+        /// <summary>
+        /// Sorts the list based on the given sort type
+        /// </summary>
+        /// <param name="sortType">sort type</param>
+        /// <returns>new sorted ObservableCollection</returns>
         public ObservableCollection<Entry> EntryListSort(SortType sortType) {
             //Checking to see what sorting type we are
             switch (sortType) {

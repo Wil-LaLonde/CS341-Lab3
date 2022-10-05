@@ -1,21 +1,22 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 
 namespace Lab2Solution {
+    /// <summary>
+    /// Entry class that contains information about crossword entries
+    /// </summary>
     public class Entry : ObservableObject {
-
-        const int MAX_DIFFICULTY = 2;
-        String clue;
-        String answer;
+        string clue;
+        string answer;
         int difficulty;
-        String date;
-        int id; 
+        string date;
+        int id;
 
-        public String Clue {
+        public string Clue {
             get { return clue; }
             set { SetProperty(ref clue, value); }
         }
 
-        public String Answer {
+        public string Answer {
             get { return answer; }
             set { SetProperty(ref answer, value); }
         }
@@ -25,7 +26,7 @@ namespace Lab2Solution {
             set { SetProperty(ref difficulty, value); }
         }
 
-        public String Date {
+        public string Date {
             get { return date; }
             set { SetProperty(ref date, value); }
         }
@@ -35,7 +36,15 @@ namespace Lab2Solution {
             set { SetProperty(ref id, value); }
         }
 
-        public Entry(String clue, String answer, int difficulty, String date, int id){
+        /// <summary>
+        /// Entry constructor
+        /// </summary>
+        /// <param name="clue">entry clue</param>
+        /// <param name="answer">entry answer</param>
+        /// <param name="difficulty">entry difficulty</param>
+        /// <param name="date">entry date</param>
+        /// <param name="id">entry id</param>
+        public Entry(string clue, string answer, int difficulty, string date, int id) {
             this.clue = clue;
             this.answer = answer;
             this.difficulty = difficulty;

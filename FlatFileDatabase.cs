@@ -1,6 +1,5 @@
 ﻿using System.Text.Json;
 using System.Collections.ObjectModel;
-using Microsoft.Maui.Controls;
 
 // https://www.dotnetperls.com/serialize-list
 // https://www.daveoncsharp.com/2009/07/xml-serialization-of-collections/
@@ -9,22 +8,17 @@ namespace Lab2Solution {
 
     /// <summary>
     /// This is the database class, currently a FlatFileDatabase
+    /// Leaving this in the codebase since this could be used for much faster local testing.
     /// </summary>
     public class FlatFileDatabase : IDatabase {
-        String path = "";
-        String filename = "clues.json";
-
-        /// <summary>
-        /// A local version of the database, we *might* want to keep this in the code and merely
-        /// adjust it whenever Add(), Delete() or Edit() is called
-        /// Alternatively, we could delete this, meaning we will reach out to bit.io for everything
-        /// What are the costs of that?
-        /// There are always tradeoffs in software engineering.
-        /// </summary>
+        string path = "";
+        string filename = "clues.json";
         ObservableCollection<Entry> entries = new ObservableCollection<Entry>();
-
         JsonSerializerOptions options;
 
+        /// <summary>
+        /// FlatFileDatabase constructor
+        /// </summary>
         public FlatFileDatabase() {
             string appDataPath = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
 
@@ -40,6 +34,7 @@ namespace Lab2Solution {
         /// Adds an entry to the database
         /// </summary>
         /// <param name="entry">the entry to add</param>
+        /// <returns>true/false</returns>
         public bool AddEntry(Entry entry) {
             try {
                 entry.Id = entries.Count + 1;
@@ -72,8 +67,8 @@ namespace Lab2Solution {
         /// <summary>
         /// Deletes an entry 
         /// </summary>
-        /// 
         /// <param name="entry">An entry, which is presumed to exist</param>
+        /// <returns>true/false</returns>
         public bool DeleteEntry(Entry entry) {
             try {
                 var result = entries.Remove(entry);
@@ -131,9 +126,14 @@ namespace Lab2Solution {
             return entries;
         }
 
+        /// <summary>
+        /// Sorts the list based on the given sort type
+        /// </summary>
+        /// <param name="sortType">sort type</param>
+        /// <returns>new sorted ObservableCollection</returns>
         public ObservableCollection<Entry> EntryListSort(SortType sortType) {
             //Checking to see what sorting type we are
-            switch(sortType) {
+            switch (sortType) {
                 case SortType.ClueSort:
                     entries = new ObservableCollection<Entry>(entries.OrderBy(entry => entry.Clue));
                     break;

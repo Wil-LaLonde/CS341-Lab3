@@ -15,6 +15,7 @@
                 <ColumnDefinition Width="*"/>
                 <ColumnDefinition Width="3*"/>
             </Grid.ColumnDefinitions>
+            <!-- Clue Compendium label -->
             <Label Grid.Row="0" 
                    Grid.ColumnSpan="2" 
                    Text="Clue Compendium" 
@@ -24,6 +25,7 @@
                    Padding="20"/>
 
             <VerticalStackLayout Grid.Row="1" Grid.Column="0" WidthRequest="200">
+                <!-- Add Entry button -->
                 <Button Text="Add Entry" 
                         Clicked="AddEntry"
                         BackgroundColor="LightGray"
@@ -34,6 +36,7 @@
                         CornerRadius="0"
                         Padding="20"
                         Margin="10"/>
+                <!-- Delete Entry button -->
                 <Button Text="Delete Entry" 
                         Clicked="DeleteEntry" 
                         BackgroundColor="LightGray"
@@ -44,6 +47,7 @@
                         CornerRadius="0"
                         Padding="20"
                         Margin="10"/>
+                <!-- Edit Entry button -->
                 <Button Text="Edit Entry" 
                         Clicked="EditEntry" 
                         BackgroundColor="LightGray"
@@ -54,6 +58,7 @@
                         CornerRadius="0"
                         Padding="20"
                         Margin="10"/>
+                <!-- Clue Sort button -->
                 <Button Text="Clue Sort"
                         Clicked="ClueSort"
                         Background="LightGray"
@@ -63,7 +68,8 @@
                         BorderWidth="2"
                         CornerRadius="0"
                         Padding="10"
-                        Margin="10, 125, 10, 0"/>
+                        Margin="10, 100, 10, 10"/>
+                <!-- Answer Sort button -->
                 <Button Text="Answer Sort"
                         Clicked="AnswerSort"
                         Background="LightGray"
@@ -114,6 +120,7 @@
                         <ColumnDefinition Width="*"/>
                         <ColumnDefinition Width="8*"/>
                     </Grid.ColumnDefinitions>
+                    <!-- Clue: label -->
                     <Label Grid.Row="0"
                            Grid.Column="0"
                            Text="Clue: "
@@ -121,10 +128,10 @@
                            HorizontalOptions="End"
                            FontSize="20"
                            FontAttributes="Bold"/>
+                    <!-- Clue Frame and Entry box -->
                     <Frame Grid.Row="0" Grid.Column="1" CornerRadius="0" BorderColor="Black" Margin="5">
                         <Entry Grid.Row="0"
                                Grid.Column="1"
-                               Text="Ring Highlight?"
                                FontSize="20"
                                Margin="-5"
                                VerticalOptions="Center"
@@ -132,6 +139,7 @@
                                PlaceholderColor="LightGray"
                                x:Name="clueENT"/>
                     </Frame>
+                    <!-- Answer: label -->
                     <Label Grid.Row="1"
                            Grid.Column="0"
                            Text="Answer: "
@@ -139,10 +147,10 @@
                            HorizontalOptions="End"
                            FontSize="20"
                            FontAttributes="Bold"/>
+                    <!-- Answer Frame and Entry box -->
                     <Frame Grid.Row="1" Grid.Column="1" CornerRadius="0" BorderColor="Black" Margin="5">
                         <Entry Grid.Row="1"
                                Grid.Column="1"
-                               Text="Answer Ring Highlight"
                                FontSize="20"
                                Margin="-5"
                                VerticalOptions="Center"
@@ -162,6 +170,7 @@
                             <ColumnDefinition Width="3*"/>
                             <ColumnDefinition Width="*"/>
                         </Grid.ColumnDefinitions>
+                        <!-- Difficulty: label -->
                         <Label Grid.Row="0"
                                Grid.Column="0"
                                Text="Difficulty: "
@@ -169,10 +178,10 @@
                                HorizontalOptions="End"
                                FontSize="20"
                                FontAttributes="Bold"/>
+                        <!-- Difficulty Frame and Entry box -->
                         <Frame Grid.Row="0" Grid.Column="1" CornerRadius="0" BorderColor="Black" Margin="5">
                             <Entry Grid.Row="0"
                                    Grid.Column="1"
-                                   Text="2"
                                    FontSize="20"
                                    Margin="-5"
                                    VerticalOptions="Center"
@@ -180,6 +189,7 @@
                                    PlaceholderColor="LightGray"
                                    x:Name="difficultyENT"/>
                         </Frame>
+                        <!-- Date: label -->
                         <Label Grid.Row="0"
                                Grid.Column="3"
                                Text="Date: "
@@ -187,10 +197,10 @@
                                HorizontalOptions="End"
                                FontSize="20"
                                FontAttributes="Bold"/>
+                        <!-- Date Frame and Entry box -->
                         <Frame Grid.Row="0" Grid.Column="4" CornerRadius="0" BorderColor="Black" Margin="5">
                             <Entry Grid.Row="0"
                                    Grid.Column="4"
-                                   Text="10/01/2022"
                                    FontSize="20"
                                    Margin="-5"
                                    VerticalOptions="Center"

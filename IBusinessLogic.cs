@@ -2,7 +2,7 @@
 
 namespace Lab2Solution {
     /// <summary>
-    /// The interface for BusinessLogic
+    /// IBusinessLogic interface
     /// </summary>
     public interface IBusinessLogic {
         EntryError AddEntry(string clue, string answer, int difficulty, string date);
